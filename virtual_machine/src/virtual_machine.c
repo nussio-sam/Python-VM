@@ -9,14 +9,14 @@ VirtualMachine* vm_create(Instruction* program, int instruction_count) {
     exit(1);
   }
   
-  VirtualMachine* vm = malloc(sizeof(VirtualMachine));
+  VirtualMachine* vm = calloc(1, sizeof(VirtualMachine)); //better to zero-init for safety cuz Im not memory pooling manually
   if(!vm) {
     fprintf(stderr, "Failed to allocate memory\n");
     exit(1);
   }
   vm->instructions = program;
   vm->instruction_count = instruction_count;
-  vm->instruct_pointer = 0;
+  vm->instruct_pointer = 0; //not necessary but more readable
   vm->stack_pointer = 0;
 
   return vm;

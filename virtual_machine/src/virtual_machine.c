@@ -5,13 +5,13 @@
 
 VirtualMachine* vm_create(Instruction* program, int instruction_count) {
   if (!program || instruction_count <= 0) {
-    fprintf(stderr, "Invalid input parameters\n");
+    perror("Invalid input parameters\n");
     exit(1);
   }
   
   VirtualMachine* vm = calloc(1, sizeof(VirtualMachine)); //better to zero-init for safety cuz Im not memory pooling manually
   if(!vm) {
-    fprintf(stderr, "Failed to allocate memory\n");
+    perror("Failed to allocate memory\n");
     exit(1);
   }
   vm->instructions = program;
@@ -26,7 +26,7 @@ void vm_collect(VirtualMachine* vm) {
   if(vm) {
     free(vm);
   } else {
-    fprintf(stderr, "No VM running!\n");
+    perror("No VM running!\n");
     return;
   }
 }

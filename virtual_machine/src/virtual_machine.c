@@ -56,6 +56,7 @@ struct IntPair pop_two(VirtualMachine* vm) {
   result.b = pop(vm);
   return result;
 }
+#define ARITH_VAL(vm) (struct IntPair operands = pop_two(vm))
 void vm_run(VirtualMachine* vm) {
   while(vm->instruct_pointer < vm->instruction_count) {
     Instruction instr = vm->instructions[vm->instruct_pointer++];
@@ -66,24 +67,24 @@ void vm_run(VirtualMachine* vm) {
         push(vm, instr.operand);
         break;
       case OP_ADD:
-        struct IntPair operands = pop_two(vm);
-        push(vm, operands.a + operands.b);
+        {ARITH_VAL(vm);
+        push(vm, operands.a + operands.b);}
         break;
       case OP_SUB:
-        struct IntPair operands = pop_two(vm);
-        push(vm, operands.a - operands.b);
+        {ARITH_VAL(vm);
+        push(vm, operands.a - operands.b);}
         break;
       case OP_MUL:
-        struct IntPair operands = pop_two(vm);
-        push(vm, operands.a * operands.b);
+        {ARITH_VAL(vm);
+        push(vm, operands.a * operands.b);}
         break;
       case OP_DIV:
-        struct IntPair operands = pop_two(vm)
+        {ARITH_VAL(vm);
         if( operands.b == 0) {
-          perror("Division by zero\n");
+          perror("Division by zero");
           exit(1);
         }
-        push(vm, operands.a / operands.b);
+        push(vm, operands.a / operands.b);}
         break;
       case OP_PRINT:
         printf("%d\n", pop(vm));
@@ -101,7 +102,7 @@ void vm_run(VirtualMachine* vm) {
         return;
       default:
         perror("Unknown opcode");
-        exit(1)
+        exit(1);
     }
   }
 }

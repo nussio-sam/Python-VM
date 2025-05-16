@@ -46,6 +46,16 @@ static int32_t pop(VirtualMachine* vm) {
   return vm->stack[--vm->stack_pointer];
 }
 
+struct IntPair {
+  int a;
+  int b;
+};
+struct IntPair pop_two(VirtualMachine* vm) {
+  struct IntPair result;
+  result.a = pop(vm);
+  result.b = pop(vm);
+  return result;
+}
 void vm_run(VirtualMachine* vm) {
   while(vm->instruct_pointer < vm->instruction_count) {
     Instruction instr = vm->instructions[vm->instruct_pointer++];
@@ -56,28 +66,24 @@ void vm_run(VirtualMachine* vm) {
         push(vm, instr.operand);
         break;
       case OP_ADD:
-        int a = pop(vm);
-        int b = pop(vm);
-        push(vm, a + b);
+        struct IntPair operands = pop_two(vm);
+        push(vm, operands.a + operands.b);
         break;
       case OP_SUB:
-        int a = pop(vm);
-        int b = pop(vm);
-        push(vm, a - b);
+        struct IntPair operands = pop_two(vm);
+        push(vm, operands.a - operands.b);
         break;
       case OP_MUL:
-        int a = pop(vm);
-        int b = pop(vm);
-        push(vm, a * b);
+        struct IntPair operands = pop_two(vm);
+        push(vm, operands.a * operands.b);
         break;
       case OP_DIV:
-        int a = pop(vm);
-        int b = pop(vm);
-        if( b == 0) {
+        struct IntPair operands = pop_two(vm)
+        if( operands.b == 0) {
           perror("Division by zero\n");
           exit(1);
         }
-        push(vm, a / b);
+        push(vm, operands.a / operands.b);
         break;
       case OP_PRINT:
         printf("%d\n", pop(vm));
@@ -94,7 +100,7 @@ void vm_run(VirtualMachine* vm) {
       case OP_STOP:
         return;
       default:
-        perror("Unknown opcode: %d\n", instr.opcode);
+        perror("Unknown opcode");
         exit(1)
     }
   }

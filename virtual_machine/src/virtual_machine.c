@@ -6,13 +6,13 @@
 VirtualMachine* vm_create(Instruction* program, int instruction_count) {
   if (!program || instruction_count <= 0) {
     perror("Invalid input parameters\n");
-    exit(1);
+    return NULL; //REMEMBER FOR DOCUMENTATION PLZ FUTURE ME
   }
   
   VirtualMachine* vm = calloc(1, sizeof(VirtualMachine)); //better to zero-init for safety cuz Im not memory pooling manually
   if(!vm) {
     perror("Failed to allocate memory\n");
-    exit(1);
+    return NULL;
   }
   vm->instructions = program;
   vm->instruction_count = instruction_count;
@@ -30,18 +30,19 @@ void vm_collect(VirtualMachine* vm) {
     return;
   }
 }
-static void push(VirtualMachine* vm, int32_t val) {
+static bool push(VirtualMachine* vm, int32_t val) {
   if (vm->stack_pointer >= STACK_SIZE) {
     perror("Stack overflow!");
-    exit(1);
+    return false;
   }
   vm->stack[vm->stack_pointer++] = val;
+  return true
 }
 
 static int32_t pop(VirtualMachine* vm) {
   if (vm->stack_pointer <= 0) {
     perror("Stack underflow");
-    exit(1);
+    return;
   }
   return vm->stack[--vm->stack_pointer];
 }
@@ -82,7 +83,7 @@ void vm_run(VirtualMachine* vm) {
         {ARITH_VAL(vm);
         if( operands.b == 0) {
           perror("Division by zero");
-          exit(1);
+          return;
         }
         push(vm, operands.a / operands.b);}
         break;

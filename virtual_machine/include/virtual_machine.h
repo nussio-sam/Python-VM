@@ -18,6 +18,16 @@ typedef struct {
   int instruct_pointer;
 } VirtualMachine;
 
+typedef enum {
+  VM_GOOD = 0,
+  VM_ERR_BAD_OPCODE,
+  VM_ERR_STACK_OVERFLOW,
+  VM_ERR_STACK_UNDERFLOW,
+  VM_ERR_ZERO_DIV,
+  VM_ERR_BAD_INPUT,
+  VM_ERR_OUT_OF_MEMORY
+} VMError;
+
 VirtualMachine vm_create(Instruction* program, int instruction_count);
 void vm_collect(VirtualMachine* vm);
 void vm_run(VirtualMachine* vm);

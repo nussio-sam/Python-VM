@@ -1,26 +1,27 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include "virtual_machine.h"
 #include "bytecode.h"
 
-VirtualMachine* vm_create(Instruction* program, int instruction_count) {
+VirtualMachine vm_create(Instruction* program, int instruction_count) {
   if (!program || instruction_count <= 0) {
     perror("Invalid input parameters\n");
-    return NULL; //REMEMBER FOR DOCUMENTATION PLZ FUTURE ME
+    exit(1); //REMEMBER FOR DOCUMENTATION PLZ FUTURE ME
   }
-  
+
   VirtualMachine* vm = calloc(1, sizeof(VirtualMachine)); //better to zero-init for safety cuz Im not memory pooling manually
   if(!vm) {
     perror("Failed to allocate memory\n");
-    return NULL;
+    exit(1);
   }
   vm->instructions = program;
   vm->instruction_count = instruction_count;
   vm->instruct_pointer = 0; //not necessary but more readable
   vm->stack_pointer = -1;
 
-  return vm;
-  
+  return *vm;
+
 }
 void vm_collect(VirtualMachine* vm) {
   if(vm) {
@@ -36,13 +37,13 @@ static bool push(VirtualMachine* vm, int32_t val) {
     return false;
   }
   vm->stack[vm->stack_pointer++] = val;
-  return true
+  return true;
 }
 
 static int32_t pop(VirtualMachine* vm) {
   if (vm->stack_pointer <= 0) {
     perror("Stack underflow");
-    return;
+    return 0;
   }
   return vm->stack[--vm->stack_pointer];
 }
@@ -57,7 +58,7 @@ struct IntPair pop_two(VirtualMachine* vm) {
   result.b = pop(vm);
   return result;
 }
-#define ARITH_VAL(vm) (struct IntPair operands = pop_two(vm))
+
 void vm_run(VirtualMachine* vm) {
   while(vm->instruct_pointer < vm->instruction_count) {
     Instruction instr = vm->instructions[vm->instruct_pointer++];
@@ -68,19 +69,23 @@ void vm_run(VirtualMachine* vm) {
         push(vm, instr.operand);
         break;
       case OP_ADD:
-        {ARITH_VAL(vm);
+        {
+        struct IntPair operands = pop_two(vm);
         push(vm, operands.a + operands.b);}
         break;
       case OP_SUB:
-        {ARITH_VAL(vm);
+      {
+        struct IntPair operands = pop_two(vm);
         push(vm, operands.a - operands.b);}
         break;
       case OP_MUL:
-        {ARITH_VAL(vm);
+      {
+        struct IntPair operands = pop_two(vm);
         push(vm, operands.a * operands.b);}
         break;
       case OP_DIV:
-        {ARITH_VAL(vm);
+      {
+        struct IntPair operands = pop_two(vm);
         if( operands.b == 0) {
           perror("Division by zero");
           return;
